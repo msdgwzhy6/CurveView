@@ -31,7 +31,7 @@ allprojects {
 添加依赖
 ```gradle
 dependencies {
-        compile 'com.github.auv1107:CurveView:a0e576c041'
+	compile 'com.github.auv1107:CurveView:c0a7f05a87'
 }
 ```
 
