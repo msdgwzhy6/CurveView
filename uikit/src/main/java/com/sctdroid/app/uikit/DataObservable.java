@@ -1,4 +1,4 @@
-package com.sctdroid.app.curveview;
+package com.sctdroid.app.uikit;
 
 import android.database.Observable;
 

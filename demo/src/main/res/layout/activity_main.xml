@@ -6,13 +6,11 @@
     android:layout_height="match_parent"
     tools:context="com.sctdroid.app.curveview.MainActivity">
 
-    <com.sctdroid.app.curveview.CurveView
+    <com.sctdroid.app.uikit.CurveView
         android:id="@+id/curve_view"
         android:layout_width="match_parent"
         android:layout_height="150dp"
         app:backgroundColor="#16b7df"
-        app:pairDataKeys="@array/keys"
-        app:pairDataValues="@array/values"
         app:corner="1px"
         app:contentPaddingStart="40dp"
         app:contentPaddingEnd="40dp"

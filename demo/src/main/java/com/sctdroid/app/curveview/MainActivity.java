@@ -3,7 +3,8 @@ package com.sctdroid.app.curveview;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
-import com.sctdroid.app.curveview.CurveView.Gravity;
+import com.sctdroid.app.uikit.CurveView;
+import com.sctdroid.app.uikit.CurveView.Gravity;
 
 import java.util.HashSet;
 import java.util.Set;
