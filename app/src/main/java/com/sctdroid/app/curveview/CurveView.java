@@ -13,6 +13,7 @@ import android.text.TextPaint;
 import android.text.style.TextAppearanceSpan;
 import android.util.AttributeSet;
 import android.util.SparseArray;
+import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.VelocityTracker;
 import android.view.View;
@@ -86,7 +87,7 @@ public class CurveView extends View implements DataObserver {
 
     protected Paint mContentPaint;
     protected Paint mBackgroundPaint;
-    protected Paint mXAxisPaint;
+    protected TextPaint mXAxisPaint;
     protected TextPaint mDotTextPaint;
     private Drawable mBackground;
 
@@ -107,7 +108,7 @@ public class CurveView extends View implements DataObserver {
         mBackgroundPaint = new Paint();
 //        mBackgroundPaint.setColor(mFillColor);
 
-        mXAxisPaint = new Paint();
+        mXAxisPaint = new TextPaint();
         mXAxisPaint.setColor(mAxisTextColor);
         mXAxisPaint.setTextSize(mAxisTextSize);
 
@@ -192,7 +193,8 @@ public class CurveView extends View implements DataObserver {
             int dotX = (int) (unitWidth * scaleX * i);
             int dotY = bottomY - (mDecorations.get(i).mLevel - mMinLevel) * heightPerLevel;
             if (mShowXText) {
-                canvas.drawText(decoration.mXAxisText, dotX, bottomY + mAxisTextSize, mXAxisPaint);
+                int offsetX = getTextOffsetX(mXAxisPaint, decoration.mXAxisText, GRAVITY_CENTER_HORIZONTAL);
+                canvas.drawText(decoration.mXAxisText, dotX + offsetX, bottomY + mAxisTextSize, mXAxisPaint);
             }
             for (Mark mark : decoration.mMarks) {
                 int offsetX = getTextOffsetX(mDotTextPaint, mark.content, mark.gravity) + mark.marginStart - mark.marginEnd;

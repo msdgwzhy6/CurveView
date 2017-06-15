@@ -2,7 +2,6 @@ package com.sctdroid.app.curveview;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.Gravity;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -21,29 +20,29 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public int getCount() {
-                return 11;
+                return 7;
             }
 
             @Override
             public int getLevel(int position) {
-                return (int) (50 + (Math.random() * 10) * 5);
+                return (int) (15 + (Math.random() * 20));
             }
 
             @Override
             public int getMinLevel() {
-                return 30;
+                return 15;
             }
 
             @Override
             public int getMaxLevel() {
-                return 100;
+                return 35;
             }
 
             @Override
             public Set<CurveView.Mark> onCreateMarks(int position) {
                 Set<CurveView.Mark> marks = new HashSet<CurveView.Mark>();
-                CurveView.Mark mark = new CurveView.Mark(getXAxisText(position), CurveView.GRAVITY_BOTTOM | CurveView.GRAVITY_CENTER_HORIZONTAL, 0, 10, 0, 0);
-                CurveView.Mark mark1 = new CurveView.Mark(getXAxisText(position), CurveView.GRAVITY_START);
+                CurveView.Mark mark = new CurveView.Mark(getLevel(position) + "°", CurveView.GRAVITY_BOTTOM | CurveView.GRAVITY_CENTER_HORIZONTAL, 0, 20, 0, 0);
+                CurveView.Mark mark1 = new CurveView.Mark(getLevel(position) + "°", CurveView.GRAVITY_START | CurveView.GRAVITY_CENTER_HORIZONTAL, 0, 0, 0, 20);
                 marks.add(mark);
                 marks.add(mark1);
                 return marks;
@@ -51,7 +50,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public String getXAxisText(int i) {
-                return text.substring(i,i+1);
+                return text.substring(i, i + 1);
             }
         });
     }
