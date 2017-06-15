@@ -13,7 +13,6 @@ import android.text.TextPaint;
 import android.text.style.TextAppearanceSpan;
 import android.util.AttributeSet;
 import android.util.SparseArray;
-import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.VelocityTracker;
 import android.view.View;
@@ -73,13 +72,15 @@ public class CurveView extends View implements DataObserver {
      <flag name="center_horizontal" value="0x20" />
      <flag name="center" value="0x30" />
      */
-    public final static int GRAVITY_TOP = 0x01;
-    public final static int GRAVITY_BOTTOM = 0x02;
-    public final static int GRAVITY_START = 0x04;
-    public final static int GRAVITY_END = 0x08;
-    public final static int GRAVITY_CENTER_VERTICAL = 0x10;
-    public final static int GRAVITY_CENTER_HORIZONTAL = 0x20;
-    public final static int GRAVITY_CENTER = 0x30;
+    public static class Gravity {
+        public final static int TOP = 0x01;
+        public final static int BOTTOM = 0x02;
+        public final static int START = 0x04;
+        public final static int END = 0x08;
+        public final static int CENTER_VERTICAL = 0x10;
+        public final static int CENTER_HORIZONTAL = 0x20;
+        public final static int CENTER = 0x30;
+    }
 
     private boolean mShowXLine = false;
     private boolean mShowXText = false;
@@ -193,7 +194,7 @@ public class CurveView extends View implements DataObserver {
             int dotX = (int) (unitWidth * scaleX * i);
             int dotY = bottomY - (mDecorations.get(i).mLevel - mMinLevel) * heightPerLevel;
             if (mShowXText) {
-                int offsetX = getTextOffsetX(mXAxisPaint, decoration.mXAxisText, GRAVITY_CENTER_HORIZONTAL);
+                int offsetX = getTextOffsetX(mXAxisPaint, decoration.mXAxisText, Gravity.CENTER_HORIZONTAL);
                 canvas.drawText(decoration.mXAxisText, dotX + offsetX, bottomY + mAxisTextSize, mXAxisPaint);
             }
             for (Mark mark : decoration.mMarks) {
@@ -213,9 +214,9 @@ public class CurveView extends View implements DataObserver {
     private int getTextOffsetY(TextPaint paint, int gravity) {
         int height = (int) (paint.getFontMetrics().descent - paint.getFontMetrics().ascent);
         int offset = (int) (paint.getFontMetrics().descent + paint.getFontMetrics().ascent) / 2;
-        if ((gravity & GRAVITY_CENTER_VERTICAL) != 0) {
+        if ((gravity & Gravity.CENTER_VERTICAL) != 0) {
             offset += height / 2;
-        } else if ((gravity & GRAVITY_BOTTOM) != 0) {
+        } else if ((gravity & Gravity.BOTTOM) != 0) {
             offset += height;
         }
         return offset;
@@ -224,9 +225,9 @@ public class CurveView extends View implements DataObserver {
     private int getTextOffsetX(TextPaint paint, String s, int gravity) {
         int width = (int) paint.measureText(s);
         int offset = 0;
-        if ((gravity & GRAVITY_CENTER_HORIZONTAL) != 0) {
+        if ((gravity & Gravity.CENTER_HORIZONTAL) != 0) {
             offset = - width / 2;
-        } else if ((gravity & GRAVITY_START) != 0) {
+        } else if ((gravity & Gravity.START) != 0) {
             offset = - width;
         }
 
@@ -441,7 +442,7 @@ public class CurveView extends View implements DataObserver {
         public final TextAppearanceSpan textAppearanceSpan;
 
         public Mark(String content) {
-            this(content, GRAVITY_BOTTOM | GRAVITY_CENTER_HORIZONTAL);
+            this(content, Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL);
         }
 
         public Mark(String content, int gravity) {
