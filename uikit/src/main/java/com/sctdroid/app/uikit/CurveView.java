@@ -337,6 +337,7 @@ public class CurveView extends View implements DataObserver {
     @Override
     public void onChanged() {
         updateAdapterData();
+        invalidate();
     }
 
     private int mMinLevel = 0;
@@ -376,6 +377,7 @@ public class CurveView extends View implements DataObserver {
         // dot data
         // dot text data
         mDecorations.clear();
+        mContentPath.reset();
         // line data
         // other data
     }

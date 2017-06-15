@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -10,6 +10,7 @@
         android:id="@+id/curve_view"
         android:layout_width="match_parent"
         android:layout_height="150dp"
+        android:layout_centerVertical="true"
         app:backgroundColor="#16b7df"
         app:corner="1px"
         app:contentPaddingStart="40dp"
@@ -29,4 +30,15 @@
         app:unitWidth="100dp"
         />
 
-</android.support.constraint.ConstraintLayout>
+    <TextView
+        android:id="@+id/button"
+        android:layout_width="match_parent"
+        android:layout_height="72dp"
+        android:text="@string/click_me_to_change"
+        android:background="@android:color/white"
+        android:gravity="center"
+        android:clickable="true"
+        android:layout_alignParentBottom="true"
+        />
+
+</RelativeLayout>

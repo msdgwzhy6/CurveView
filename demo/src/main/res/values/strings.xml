@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">CurveView</string>
+    <string name="click_me_to_change">点击更新</string>
 </resources>
