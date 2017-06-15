@@ -7,6 +7,7 @@
     tools:context="com.sctdroid.app.curveview.MainActivity">
 
     <com.sctdroid.app.curveview.CurveView
+        android:id="@+id/curve_view"
         android:layout_width="match_parent"
         android:layout_height="300dp"
         app:backgroundColor="@android:color/black"
@@ -18,8 +19,8 @@
         app:contentPaddingStart="40dp"
         app:contentPaddingEnd="40dp"
         app:strokeWidth="1px"
-        app:showXLine="false"
-        app:showXText="false"
+        app:showXLine="true"
+        app:showXText="true"
         app:contentColor="@android:color/white"
         app:dotTextColor="@android:color/white"
         app:dotTextSize="12dp"

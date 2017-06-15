@@ -10,22 +10,23 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.drawable.Drawable;
 import android.text.TextPaint;
+import android.text.style.TextAppearanceSpan;
 import android.util.AttributeSet;
-import android.util.Log;
-import android.util.Pair;
+import android.util.SparseArray;
 import android.view.MotionEvent;
 import android.view.VelocityTracker;
 import android.view.View;
 import android.view.animation.DecelerateInterpolator;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Created by lixindong on 9/23/16.
  */
 
-public class CurveView extends View {
+public class CurveView extends View implements DataObserver {
     public CurveView(Context context) {
         this(context, null);
     }
@@ -42,8 +43,6 @@ public class CurveView extends View {
 
     public static final String TAG = CurveView.class.getSimpleName();
 
-    protected int mPairDataKeysId;
-    protected int mPairDataValuesId;
     protected int mUnitWidth;
     protected int mFillColor;
     protected int mContentColor;
@@ -73,24 +72,22 @@ public class CurveView extends View {
      <flag name="center_horizontal" value="0x20" />
      <flag name="center" value="0x30" />
      */
-    public final int GRAVITY_TOP = 0x01;
-    public final int GRAVITY_BOTTOM = 0x02;
-    public final int GRAVITY_START = 0x04;
-    public final int GRAVITY_END = 0x08;
-    public final int GRAVITY_CENTER_VERTICAL = 0x10;
-    public final int GRAVITY_CENTER_HORIZONTAL = 0x20;
-    public final int GRAVITY_CENTER = 0x30;
+    public final static int GRAVITY_TOP = 0x01;
+    public final static int GRAVITY_BOTTOM = 0x02;
+    public final static int GRAVITY_START = 0x04;
+    public final static int GRAVITY_END = 0x08;
+    public final static int GRAVITY_CENTER_VERTICAL = 0x10;
+    public final static int GRAVITY_CENTER_HORIZONTAL = 0x20;
+    public final static int GRAVITY_CENTER = 0x30;
 
     private boolean mShowXLine = false;
     private boolean mShowXText = false;
     private boolean mShowY = false;
 
-    protected List<Pair<String, Integer>> mPairData;
-
     protected Paint mContentPaint;
     protected Paint mBackgroundPaint;
-    protected Paint mFirstPaint;
-    protected TextPaint mSecondPaint;
+    protected Paint mXAxisPaint;
+    protected TextPaint mDotTextPaint;
     private Drawable mBackground;
 
     protected int mOffsetX = 0;
@@ -110,13 +107,13 @@ public class CurveView extends View {
         mBackgroundPaint = new Paint();
 //        mBackgroundPaint.setColor(mFillColor);
 
-        mFirstPaint = new Paint();
-        mFirstPaint.setColor(mAxisTextColor);
-        mFirstPaint.setTextSize(mAxisTextSize);
+        mXAxisPaint = new Paint();
+        mXAxisPaint.setColor(mAxisTextColor);
+        mXAxisPaint.setTextSize(mAxisTextSize);
 
-        mSecondPaint = new TextPaint();
-        mSecondPaint.setColor(mDotTextColor);
-        mSecondPaint.setTextSize(mDotTextSize);
+        mDotTextPaint = new TextPaint();
+        mDotTextPaint.setColor(mDotTextColor);
+        mDotTextPaint.setTextSize(mDotTextSize);
 
         mContentPath = new Path();
         //        mMaxVelocity = ViewConfiguration.get(getContext()).getScaledMaximumFlingVelocity();
@@ -150,15 +147,6 @@ public class CurveView extends View {
 
             mShowAll = a.getBoolean(R.styleable.Curve_showAll, false);
 
-            mPairData = new ArrayList<>();
-
-            int[] values = getResources().getIntArray(R.array.values);
-            String[] keys = getResources().getStringArray(R.array.keys);
-
-            for (int i = 0; i < values.length && i < keys.length; i++) {
-                Pair<String, Integer> pair = new Pair<>(keys[i], values[i]);
-                mPairData.add(pair);
-            }
         } finally {
             a.recycle();
         }
@@ -168,40 +156,50 @@ public class CurveView extends View {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
+        canvas.drawColor(mFillColor);
+
+        if (mDecorations == null || mDecorations.size() == 0) {
+            return;
+        }
+
         float scaleX = 1f;
         int unitWidth = mUnitWidth;
         if (mShowAll) {
-            unitWidth = (getWidth() - mContentPaddingStart - mContentPaddingEnd) / (mPairData.size() - 1);
+            unitWidth = (getWidth() - mContentPaddingStart - mContentPaddingEnd) / (mDecorations.size() - 1);
         }
 
-        if (mContentPath.isEmpty()) {
+        if (mContentPath.isEmpty() || mForceUpdate) {
+            mForceUpdate = false;
             int height = getHeight();
-            int rateY = (height - mContentPaddingTop - mContentPaddingBottom) / 100;
-            mContentPath.moveTo(0, height - mContentPaddingBottom - mPairData.get(0).second * rateY);
-            for (int i = 1; i < mPairData.size(); i++) {
-                mContentPath.lineTo(i * unitWidth * scaleX, height - mContentPaddingBottom - mPairData.get(i).second * rateY);
+            int heightPerLevel = (height - mContentPaddingTop - mContentPaddingBottom) / (mMaxLevel - mMinLevel);
+
+            mContentPath.moveTo(0, height - mContentPaddingBottom - (mDecorations.get(0).mLevel - mMinLevel) * heightPerLevel);
+            for (int i = 1; i < mDecorations.size(); i++) {
+                mContentPath.lineTo(i * unitWidth * scaleX, height - mContentPaddingBottom - (mDecorations.get(i).mLevel - mMinLevel) * heightPerLevel);
             }
         }
 
         canvas.save();
         canvas.translate(mOffsetX + mContentPaddingStart, 0);
 
-        canvas.drawColor(mFillColor);
         canvas.drawPath(mContentPath, mContentPaint);
 
-        int rateY = (getHeight() - mContentPaddingTop - mContentPaddingBottom) / 100;
-        for (int i = 0; i < mPairData.size(); i++) {
+        int heightPerLevel = (getHeight() - mContentPaddingTop - mContentPaddingBottom) / (mMaxLevel - mMinLevel);
+        for (int i = 0; i < mDecorations.size(); i++) {
+            ItemDecoration decoration = mDecorations.get(i);
+
             int bottomY = getHeight() - mContentPaddingBottom;
             int dotX = (int) (unitWidth * scaleX * i);
-            int dotY = bottomY - mPairData.get(i).second * rateY;
+            int dotY = bottomY - (mDecorations.get(i).mLevel - mMinLevel) * heightPerLevel;
             if (mShowXText) {
-                canvas.drawText(mPairData.get(i).first, dotX, bottomY + mAxisTextSize, mFirstPaint);
+                canvas.drawText(decoration.mXAxisText, dotX, bottomY + mAxisTextSize, mXAxisPaint);
             }
-            String dotText = mPairData.get(i).second + "";
-            int offsetX = getTextOffsetX(mSecondPaint, dotText, mGravity);
-            int offsetY = getTextOffsetY(mSecondPaint, mGravity);
+            for (Mark mark : decoration.mMarks) {
+                int offsetX = getTextOffsetX(mDotTextPaint, mark.content, mark.gravity) + mark.marginStart - mark.marginEnd;
+                int offsetY = getTextOffsetY(mDotTextPaint, mark.gravity) + mark.marginTop - mark.marginBottom;
 
-            canvas.drawText(dotText,dotX + offsetX, dotY + offsetY, mSecondPaint);
+                canvas.drawText(mark.content, dotX + offsetX, dotY + offsetY, mDotTextPaint);
+            }
         }
 
         canvas.restore();
@@ -288,8 +286,6 @@ public class CurveView extends View {
                         float v = (Float) animation.getAnimatedValue();
                         int t = (int) animation.getCurrentPlayTime();
                         int d = (int) (velocityX * duration * 1.0f / 1000 / 2 - v * (duration - t) * 1.0f / 1000 / 2);
-                        Log.d(TAG, "velocity X " + animation.getAnimatedValue());
-                        Log.d(TAG, "d " + d);
                         setOffsetX(checkOffset(initialOffset + d));
                         invalidate();
                     }
@@ -309,7 +305,7 @@ public class CurveView extends View {
      */
     private int checkOffset(int offset) {
         // only scroll when paint width > view width
-        int paintWdith = (mPairData.size() - 1) * mUnitWidth + mContentPaddingStart + mContentPaddingEnd;
+        int paintWdith = (mDecorations.size() - 1) * mUnitWidth + mContentPaddingStart + mContentPaddingEnd;
         if (paintWdith < getWidth()) {
             return mOffsetX;
         }
@@ -321,5 +317,147 @@ public class CurveView extends View {
             offset = getWidth() - paintWdith;
         }
         return offset;
+    }
+
+    private Adapter mAdapter;
+
+    public void setAdapter(Adapter adapter) {
+        if (mAdapter != null) {
+            mAdapter.unregisterDataSetObserver(this);
+        }
+        mAdapter = adapter;
+        adapter.registerDataSetObserver(this);
+
+        updateAdapterData();
+    }
+
+    @Override
+    public void onChanged() {
+        updateAdapterData();
+    }
+
+    private int mMinLevel = 0;
+    private int mMaxLevel = 100;
+    private SparseArray<ItemDecoration> mDecorations = new SparseArray<>();
+
+    private boolean mForceUpdate = false;
+
+
+    private void updateAdapterData() {
+        mForceUpdate = true;
+        clearData();
+        if (mAdapter == null) {
+            return;
+        }
+
+        mMinLevel = mAdapter.getMinLevel();
+        mMaxLevel = mAdapter.getMaxLevel();
+
+        for (int i = 0; i < mAdapter.getCount(); i++) {
+            ItemDecoration decoration = new ItemDecoration();
+
+            int level = mAdapter.getLevel(i);
+            Set<Mark> marks = mAdapter.onCreateMarks(i);
+            String xAxisText = mAdapter.getXAxisText(i);
+
+            decoration.mLevel = level;
+            decoration.mMarks = marks;
+            decoration.mXAxisText = xAxisText;
+
+            mAdapter.decorate(decoration, i);
+            mDecorations.append(i, decoration);
+        }
+    }
+
+    private void clearData() {
+        // dot data
+        // dot text data
+        mDecorations.clear();
+        // line data
+        // other data
+    }
+
+    public abstract static class Adapter {
+
+        private final DataObservable mDataSetObservable = new DataObservable();
+
+        public void registerDataSetObserver(DataObserver observer) {
+            mDataSetObservable.registerObserver(observer);
+        }
+
+        public void unregisterDataSetObserver(DataObserver observer) {
+            mDataSetObservable.unregisterObserver(observer);
+        }
+
+        /**
+         * Notifies the attached observers that the underlying data has been changed
+         * and any View reflecting the data set should refresh itself.
+         */
+        public void notifyDataSetChanged() {
+            mDataSetObservable.notifyChanged();
+        }
+
+        public abstract int getCount();
+
+        public void draw(Canvas canvas, int x, int y, int position) {}
+
+        public void decorate(ItemDecoration decoration, int position) {}
+
+        public Set<Mark> onCreateMarks(int position) {
+            return Collections.emptySet();
+        }
+
+        public int getMinLevel() {
+            return 0;
+        }
+
+        public int getMaxLevel() {
+            return 100;
+        }
+
+        public abstract int getLevel(int position);
+
+        public String getXAxisText(int i) {
+            return "";
+        }
+
+    }
+
+    public static class ItemDecoration {
+        protected Set<Mark> mMarks = new HashSet<>();
+        protected int mLevel;
+        protected String mXAxisText;
+    }
+
+    public static class Mark {
+        public final String content;
+        public final int gravity;
+        public final int marginStart;
+        public final int marginEnd;
+        public final int marginTop;
+        public final int marginBottom;
+        public final TextAppearanceSpan textAppearanceSpan;
+
+        public Mark(String content) {
+            this(content, GRAVITY_BOTTOM | GRAVITY_CENTER_HORIZONTAL);
+        }
+
+        public Mark(String content, int gravity) {
+            this(content, gravity, 0, 0, 0, 0);
+        }
+
+        public Mark(String content, int gravity, int marginStart, int marginTop, int marginEnd, int marginBottom) {
+            this(content, gravity, marginStart, marginTop, marginEnd, marginBottom, null);
+        }
+
+        public Mark(String content, int gravity, int marginStart, int marginTop, int marginEnd, int marginBottom, TextAppearanceSpan mTextAppearanceSpan) {
+            this.content = content;
+            this.gravity = gravity;
+            this.marginStart = marginStart;
+            this.marginEnd = marginEnd;
+            this.marginTop = marginTop;
+            this.marginBottom = marginBottom;
+            this.textAppearanceSpan = mTextAppearanceSpan;
+        }
     }
 }
