@@ -6,7 +6,7 @@
         <attr name="unitWidth" format="dimension" />
         <attr name="backgroundColor" format="color" />
         <attr name="contentColor" format="color" />
-        <attr name="strokeWidth" format="integer" />
+        <attr name="strokeWidth" format="dimension" />
         <attr name="contentPaddingTop" format="dimension"/>
         <attr name="contentPaddingBottom" format="dimension"/>
         <attr name="dotTextSize" format="dimension" />
@@ -15,7 +15,7 @@
         <attr name="axisTextColor" format="color" />
         <attr name="contentPaddingStart" format="dimension" />
         <attr name="contentPaddingEnd" format="dimension" />
-        <attr name="corner" format="integer" />
+        <attr name="corner" format="dimension" />
         <attr name="showXLine" format="boolean" />
         <attr name="showXText" format="boolean" />
         <attr name="showY" format="boolean" />

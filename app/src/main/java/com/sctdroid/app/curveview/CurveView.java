@@ -129,7 +129,7 @@ public class CurveView extends View {
             mUnitWidth = a.getDimensionPixelSize(R.styleable.Curve_unitWidth, 120);
             mFillColor = a.getColor(R.styleable.Curve_backgroundColor, Color.WHITE);
             mContentColor = a.getColor(R.styleable.Curve_contentColor, Color.BLACK);
-            mStrokeWidth = a.getInteger(R.styleable.Curve_strokeWidth, 10);
+            mStrokeWidth = a.getDimensionPixelSize(R.styleable.Curve_strokeWidth, 10);
             mContentPaddingTop = a.getDimensionPixelSize(R.styleable.Curve_contentPaddingTop, 0);
             mContentPaddingBottom = a.getDimensionPixelSize(R.styleable.Curve_contentPaddingBottom, 0);
             mDotTextSize = a.getDimensionPixelSize(R.styleable.Curve_dotTextSize, 60);
@@ -137,7 +137,7 @@ public class CurveView extends View {
             mAxisTextSize = a.getDimensionPixelSize(R.styleable.Curve_axisTextSize, 40);
             mAxisTextColor = a.getColor(R.styleable.Curve_axisTextColor, Color.BLACK);
 
-            mCorner = a.getInteger(R.styleable.Curve_corner, 0);
+            mCorner = a.getDimensionPixelSize(R.styleable.Curve_corner, 0);
 
             mContentPaddingStart = a.getDimensionPixelSize(R.styleable.Curve_contentPaddingStart, 0);
             mContentPaddingEnd = a.getDimensionPixelSize(R.styleable.Curve_contentPaddingEnd, 0);
