@@ -400,26 +400,68 @@ public class CurveView extends View implements DataObserver {
             mDataSetObservable.notifyChanged();
         }
 
+        /**
+         * @return 点的数量
+         */
         public abstract int getCount();
 
-        public void draw(Canvas canvas, int x, int y, int position) {}
+        /**
+         * 绘制自定义元素, 未完成
+         * @param canvas
+         * @param x
+         * @param y
+         * @param position
+         */
+        public void draw(Canvas canvas, int x, int y, int position) {
+            // TODO
+        }
 
-        public void decorate(ItemDecoration decoration, int position) {}
+        /**
+         * 添加自定义数据, 未完成
+         * @param decoration
+         * @param position
+         */
+        public void decorate(ItemDecoration decoration, int position) {
+            // TODO
+        }
 
+        /**
+         * 设置点上的文字，每个mark是一个，可同时设置点的 8 个方向的文字
+         * 注意: Gravity 应使用 CurveView.Gravity 类
+         *
+         * @param position
+         * @return
+         */
         public Set<Mark> onCreateMarks(int position) {
             return Collections.emptySet();
         }
 
+        /**
+         * @return y 轴下限, 默认是 0
+         */
         public int getMinLevel() {
             return 0;
         }
 
+        /**
+         * @return y 轴上限，默认是 100
+         */
         public int getMaxLevel() {
             return 100;
         }
 
+        /**
+         * level 是 y 轴高度，在 minLevel 和 maxLevel 之间
+         * @param position
+         * @return 返回当前 position 的 level
+         */
         public abstract int getLevel(int position);
 
+        /**
+         * 获取第 i 个点 x 轴上的文字
+         * @param i
+         * @return
+         */
         public String getXAxisText(int i) {
             return "";
         }
