@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="Curve">
+        <attr name="pairDataKeys" format="integer" />
+        <attr name="pairDataValues" format="integer" />
+        <attr name="unitWidth" format="dimension" />
+        <attr name="backgroundColor" format="color" />
+        <attr name="contentColor" format="color" />
+        <attr name="strokeWidth" format="integer" />
+        <attr name="contentPaddingTop" format="dimension"/>
+        <attr name="contentPaddingBottom" format="dimension"/>
+        <attr name="dotTextSize" format="dimension" />
+        <attr name="dotTextColor" format="color" />
+        <attr name="axisTextSize" format="dimension" />
+        <attr name="axisTextColor" format="color" />
+        <attr name="contentPaddingStart" format="dimension" />
+        <attr name="contentPaddingEnd" format="dimension" />
+        <attr name="corner" format="integer" />
+        <attr name="showXLine" format="boolean" />
+        <attr name="showXText" format="boolean" />
+        <attr name="showY" format="boolean" />
+        <attr name="textColor" format="color" />
+        <attr name="textSize" format="dimension" />
+        <attr name="dotTextGravity" >
+            <flag name="top" value="0x01" />
+            <flag name="bottom" value="0x02" />
+            <flag name="start" value="0x04" />
+            <flag name="end" value="0x08" />
+            <flag name="center_vertical" value="0x10" />
+            <flag name="center_horizontal" value="0x20" />
+            <flag name="center" value="0x30" />
+        </attr>
+        <attr name="showAll" format="boolean" />
+    </declare-styleable>
+</resources>

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.sctdroid.app.curveview.MainActivity">
+
+    <com.sctdroid.app.curveview.CurveView
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        app:backgroundColor="@android:color/black"
+        app:pairDataKeys="@array/keys"
+        app:pairDataValues="@array/values"
+        app:corner="0"
+        app:contentPaddingTop="40dp"
+        app:contentPaddingBottom="40dp"
+        app:contentPaddingStart="40dp"
+        app:contentPaddingEnd="40dp"
+        app:strokeWidth="2"
+        app:showXLine="false"
+        app:showXText="false"
+        app:contentColor="@android:color/white"
+        app:dotTextColor="@android:color/white"
+        app:dotTextSize="12dp"
+        app:axisTextColor="@android:color/white"
+        app:dotTextGravity="center_horizontal|bottom"
+        app:showAll="false"
+        app:unitWidth="100dp"
+        />
+
+</android.support.constraint.ConstraintLayout>
